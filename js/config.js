@@ -1,0 +1,1 @@
+window.EDUHOME_API_URL = 'https://script.google.com/macros/s/AKfycbzyt5nlKKsR-_Whqe15gxb7p3eTg5Q5dwk9-T4M1N0BjQocIg7VFmjqQua0KRea-mKz/exec';

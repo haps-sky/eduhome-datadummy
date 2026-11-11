@@ -1,0 +1,104 @@
+/* ============================================================
+   Panduan (Help) page — pakai variabel tema EduHome yang sudah
+   ada di style.css, jadi otomatis ikut mode gelap/terang.
+   ============================================================ */
+
+.pd-lead {
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  margin: 4px 0 18px;
+  max-width: 640px;
+}
+
+.pd-chipnav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 24px;
+  position: sticky;
+  top: calc(var(--topbar-h, 60px) + 8px);
+  z-index: 5;
+  background: var(--bg);
+  padding: 8px 0;
+}
+
+.pd-chip {
+  padding: 6px 13px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.pd-chip:hover { border-color: var(--primary); color: var(--text-primary); }
+
+.pd-sec {
+  padding: 26px 0;
+  border-top: 1px solid var(--border);
+  scroll-margin-top: 110px;
+}
+.pd-sec:first-child { border-top: none; padding-top: 0; }
+
+.pd-sec-head { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 10px; }
+.pd-sec-num {
+  font-size: 0.76rem; font-weight: 700; color: var(--primary);
+  background: var(--primary-dim); border-radius: 8px;
+  width: 30px; height: 30px; flex-shrink: 0; margin-top: 1px;
+  display: flex; align-items: center; justify-content: center;
+}
+.pd-sec-head h3 { margin: 0 0 2px; font-size: 1.05rem; color: var(--text-primary); }
+.pd-sec-head .pd-sub {
+  margin: 0; font-size: 0.72rem; color: var(--text-dim);
+  text-transform: uppercase; letter-spacing: .04em;
+}
+.pd-intro { color: var(--text-secondary); font-size: 0.86rem; max-width: 680px; margin: 0 0 16px; }
+.pd-mini-h { font-size: 0.85rem; color: var(--text-primary); font-weight: 600; margin: 22px 0 10px; }
+
+.pd-flow { display: flex; align-items: stretch; gap: 8px; margin: 4px 0 6px; flex-wrap: wrap; }
+.pd-flow-step {
+  background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 12px 14px; flex: 1; min-width: 140px;
+}
+.pd-flow-step span { display: block; font-weight: 600; font-size: 0.8rem; color: var(--text-primary); margin-bottom: 2px; }
+.pd-flow-step small { color: var(--text-dim); font-size: 0.7rem; }
+.pd-flow-arrow { display: flex; align-items: center; color: var(--text-dim); font-size: 16px; padding: 0 2px; }
+
+.pd-shot {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(190px, 0.85fr);
+  gap: 16px; align-items: start; margin-bottom: 6px;
+}
+.pd-shot-img {
+  position: relative; border-radius: var(--radius); overflow: hidden;
+  border: 1px solid var(--border); background: var(--bg);
+}
+.pd-shot-img img { width: 100%; display: block; }
+.pd-dot {
+  position: absolute; transform: translate(-50%, -50%);
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--primary); border: 2px solid var(--bg);
+  color: #fff; font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 0 4px var(--primary-dim);
+}
+.pd-legend { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.pd-legend li { display: flex; gap: 9px; font-size: 0.78rem; color: var(--text-secondary); align-items: flex-start; }
+.pd-ln {
+  flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%;
+  background: var(--primary-dim); color: var(--primary); font-weight: 700; font-size: 10.5px;
+  display: flex; align-items: center; justify-content: center; margin-top: 1px;
+}
+
+.pd-gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; margin-top: 18px; }
+.pd-mini { margin: 0; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.pd-mini img { width: 100%; display: block; border-bottom: 1px solid var(--border); }
+.pd-mini figcaption { padding: 10px 12px; font-size: 0.72rem; color: var(--text-secondary); }
+
+@media (max-width: 720px) {
+  .pd-shot { grid-template-columns: 1fr; }
+  .pd-chipnav { position: static; }
+}

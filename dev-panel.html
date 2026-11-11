@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>EduHome – Panel Developer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:#0d1117; --bg2:#161b22; --bg3:#1c2330; --line:rgba(255,255,255,.09);
+      --text:#e6edf3; --dim:#8b949e; --accent:#4f8ef7; --accent2:#a78bfa;
+      --ok:#3fb950; --warn:#f0883e; --bad:#f85149;
+    }
+    html, body { background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; min-height:100%; }
+    body { padding:24px 16px 56px; }
+    .page { max-width:640px; margin:0 auto; }
+    h1 { font-family:'Sora',sans-serif; font-size:1.5rem; margin-bottom:4px; }
+    .lead { color:var(--dim); font-size:.9rem; margin-bottom:24px; line-height:1.5; }
+    section { background:var(--bg2); border:1px solid var(--line); border-radius:12px; padding:18px; margin-bottom:16px; }
+    h2 { font-family:'Sora',sans-serif; font-size:1rem; margin-bottom:12px; }
+    .row { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 0; border-top:1px solid var(--line); }
+    .row:first-of-type { border-top:0; padding-top:0; }
+    .row .k { color:var(--dim); font-size:.88rem; }
+    .pill { display:inline-flex; align-items:center; gap:6px; padding:3px 11px; border-radius:99px; font-size:.82rem; font-weight:500; border:1px solid var(--line); }
+    .pill::before { content:''; width:8px; height:8px; border-radius:50%; background:currentColor; }
+    .pill.on   { color:var(--warn); background:rgba(240,136,62,.1); border-color:rgba(240,136,62,.35); }
+    .pill.test { color:var(--ok);   background:rgba(63,185,80,.1);  border-color:rgba(63,185,80,.35); }
+    .pill.off  { color:var(--dim); }
+    .pill.bad  { color:var(--bad);  background:rgba(248,81,73,.1);  border-color:rgba(248,81,73,.35); }
+    .meta { font-size:.82rem; color:var(--dim); line-height:1.6; margin-top:6px; }
+    .meta b { color:var(--text); font-weight:500; }
+    .alert { margin-top:12px; padding:10px 12px; border-radius:8px; font-size:.85rem; line-height:1.5;
+             background:rgba(248,81,73,.1); border:1px solid rgba(248,81,73,.35); color:#ffb4af; }
+    .actions { display:grid; gap:10px; }
+    .act { display:flex; flex-direction:column; gap:4px; }
+    button { font-family:inherit; font-size:.92rem; font-weight:600; padding:11px 14px; border-radius:9px; border:1px solid var(--line);
+             background:var(--bg3); color:var(--text); cursor:pointer; text-align:left; }
+    button:hover:not(:disabled) { border-color:rgba(255,255,255,.25); }
+    button:focus-visible, input:focus-visible, a:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+    button:disabled { opacity:.4; cursor:not-allowed; }
+    button.primary { background:linear-gradient(135deg,var(--accent),var(--accent2)); border-color:transparent; color:#fff; }
+    button.danger  { border-color:rgba(248,81,73,.4); color:#ffb4af; }
+    .hint { font-size:.78rem; color:var(--dim); padding-left:2px; }
+    input[type=text], input[type=password] { width:100%; padding:10px 12px; border-radius:8px; border:1px solid var(--line);
+             background:var(--bg); color:var(--text); font-family:inherit; font-size:.9rem; margin-bottom:8px; }
+    .inline { display:flex; gap:8px; }
+    .inline input { margin-bottom:0; }
+    .inline button { white-space:nowrap; }
+    .note { font-size:.82rem; color:var(--dim); line-height:1.5; margin-bottom:10px; }
+    .note a { color:var(--accent); }
+    #log { font-size:.8rem; line-height:1.55; max-height:220px; overflow:auto; }
+    #log div { padding:6px 0; border-top:1px solid var(--line); word-break:break-word; }
+    #log div:first-child { border-top:0; }
+    #log .t { color:var(--dim); margin-right:6px; }
+    #log .e { color:#ffb4af; }
+    #log .s { color:#8ee29b; }
+    #busy { position:fixed; inset:0; background:rgba(13,17,23,.82); display:none; align-items:center; justify-content:center; z-index:10; padding:24px; text-align:center; }
+    #busy.show { display:flex; }
+    #busy .box { background:var(--bg2); border:1px solid var(--line); border-radius:12px; padding:22px 26px; max-width:340px; }
+    #busy p { font-size:.88rem; color:var(--dim); margin-top:8px; line-height:1.5; }
+    .spin { width:26px; height:26px; border-radius:50%; border:3px solid var(--line); border-top-color:var(--accent); margin:0 auto 12px; animation:spin .9s linear infinite; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    dialog { border:1px solid var(--line); border-radius:14px; background:var(--bg2); color:var(--text); padding:0;
+             width:min(420px, calc(100vw - 32px)); margin:auto; box-shadow:0 24px 60px rgba(0,0,0,.5); }
+    dialog::backdrop { background:rgba(13,17,23,.78); backdrop-filter:blur(2px); }
+    .dlg { padding:22px; }
+    .dlg h3 { font-family:'Sora',sans-serif; font-size:1.05rem; margin-bottom:8px; }
+    .dlg p  { font-size:.88rem; color:var(--dim); line-height:1.55; }
+    .dlg ul { margin:12px 0 0 18px; font-size:.85rem; color:var(--dim); line-height:1.65; }
+    .dlg-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:22px; }
+    .dlg-actions button { text-align:center; min-width:100px; }
+    button.confirm-danger { background:var(--bad); border-color:transparent; color:#fff; }
+    @media (prefers-reduced-motion: reduce) { .spin { animation:none; } }
+  </style>
+</head>
+<body>
+<div class="page">
+  <h1>Panel Developer</h1>
+  <p class="lead">Atur maintenance dan sesi testing. Selama testing aktif, perubahan data bersifat sementara dan akan dikembalikan saat restore.</p>
+
+  <section id="sec-access">
+    <h2>Akses</h2>
+    <div class="row"><span class="k">Login akun</span><span class="pill off" id="pill-login">Belum login</span></div>
+    <div class="row"><span class="k">Kode developer</span><span class="pill off" id="pill-key">Belum diisi</span></div>
+    <div id="access-help" style="margin-top:12px;">
+      <p class="note" id="login-note" style="display:none;">Aksi di panel ini butuh akun yang sedang login. <a href="index.html?bypass=1">Login dulu di sini</a>, lalu kembali ke halaman ini.</p>
+      <div class="inline" id="key-form">
+        <input type="password" id="key-input" placeholder="Kode developer" autocomplete="off" />
+        <button type="button" id="key-save">Simpan kode</button>
+      </div>
+      <p class="hint" id="key-msg" style="margin-top:6px;"></p>
+      <div id="open-site" style="display:none; margin-top:10px;">
+        <button type="button" id="btn-open-site" disabled>Buka website →</button>
+        <p class="hint" style="margin-top:6px;">Aktif hanya selama testing berjalan, supaya perubahan data tetap bisa di-restore. Dibuka di tab ini agar kode developer ikut terbawa.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Status</h2>
+    <div class="row"><span class="k">Maintenance</span><span class="pill off" id="pill-maint">Memuat…</span></div>
+    <div class="row"><span class="k">Testing</span><span class="pill off" id="pill-test">Memuat…</span></div>
+    <div class="meta" id="session-meta" style="display:none;"></div>
+    <div class="alert" id="session-error" style="display:none;"></div>
+  </section>
+
+  <section>
+    <h2>Aksi</h2>
+    <div class="actions">
+      <div class="act">
+        <input type="text" id="msg-input" placeholder="Pesan untuk user (opsional)" />
+        <input type="text" id="est-input" placeholder="Estimasi selesai, mis. 14.00 WIB (opsional)" />
+        <button type="button" id="btn-maint-on" class="primary">Mulai maintenance</button>
+        <span class="hint">Memblokir semua user website, termasuk Owner.</span>
+      </div>
+      <div class="act">
+        <button type="button" id="btn-test-start">Mulai testing</button>
+        <span class="hint">Membuat snapshot semua sheet. Butuh maintenance aktif.</span>
+      </div>
+      <div class="act">
+        <button type="button" id="btn-test-end" class="danger">Selesai testing &amp; restore</button>
+        <span class="hint">Mengembalikan data persis seperti saat testing dimulai, lalu memverifikasinya.</span>
+      </div>
+      <div class="act">
+        <button type="button" id="btn-maint-off">Matikan maintenance</button>
+        <span class="hint">Website kembali normal. Tidak bisa selama testing masih aktif.</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Riwayat aksi</h2>
+    <div id="log"><div><span class="t">—</span>Belum ada aksi.</div></div>
+  </section>
+</div>
+
+<dialog id="dlg" aria-labelledby="dlg-title">
+  <div class="dlg">
+    <h3 id="dlg-title"></h3>
+    <p id="dlg-body"></p>
+    <ul id="dlg-list"></ul>
+    <div class="dlg-actions">
+      <button type="button" id="dlg-cancel">Batal</button>
+      <button type="button" id="dlg-ok" class="primary">Lanjutkan</button>
+    </div>
+  </div>
+</dialog>
+
+<div id="busy" role="alertdialog" aria-live="assertive">
+  <div class="box">
+    <div class="spin"></div>
+    <strong id="busy-title">Memproses…</strong>
+    <p>Jangan tutup atau muat ulang halaman. Proses snapshot dan restore bisa memakan waktu beberapa puluh detik.</p>
+  </div>
+</div>
+
+<script>
+  // URL sama dengan yang dipakai index.html / maintenance.html
+  const API_URL = 'https://script.google.com/macros/s/AKfycbxaAE8s3vcXDWZ2BwnUI2oKcvXKh9LENR80gYa2HMFKBeh2h_2URSb17CKIBety4Tag5A/exec';
+
+  const $ = (id) => document.getElementById(id);
+  const DEV_KEY = 'eduhome_dev_key';
+  const ls = {
+    token:    () => localStorage.getItem('eduhome_token') || '',
+    // Dev key hanya di sessionStorage: per-tab, hilang saat tab ditutup.
+    key:      () => { try { return sessionStorage.getItem(DEV_KEY) || ''; } catch(e) { return ''; } },
+    setKey:   (v) => { try { sessionStorage.setItem(DEV_KEY, v); } catch(e) {} },
+    clearKey: () => { try { sessionStorage.removeItem(DEV_KEY); } catch(e) {} },
+    user:     () => { try { return JSON.parse(localStorage.getItem('eduhome_user') || '{}'); } catch(e) { return {}; } }
+  };
+  // Migrasi: buang sisa dev key lama di localStorage.
+  try { localStorage.removeItem(DEV_KEY); } catch(e) {}
+
+  let state = { maintenance:false, testMode:false, loaded:false };
+  let busy = false;
+
+  function logLine(text, kind) {
+    const box = $('log');
+    if (box.children.length === 1 && box.firstChild.textContent.includes('Belum ada aksi')) box.innerHTML = '';
+    const d = document.createElement('div');
+    const t = document.createElement('span'); t.className = 't'; t.textContent = new Date().toLocaleTimeString('id-ID');
+    const m = document.createElement('span'); if (kind) m.className = kind; m.textContent = text;
+    d.append(t, m);
+    box.prepend(d);
+  }
+
+  function setPill(el, cls, text) { el.className = 'pill ' + cls; el.textContent = text; }
+
+  async function apiGet(action) {
+    const u = new URL(API_URL);
+    u.searchParams.set('action', action);
+    u.searchParams.set('username', ls.user().username || '');
+    u.searchParams.set('session_token', ls.token());
+    if (ls.key()) u.searchParams.set('dev_key', ls.key());
+    const res = await fetch(u.toString());
+    return res.json();
+  }
+
+  async function apiPost(action, extra) {
+    const body = Object.assign({ action, username: ls.user().username || '', role: ls.user().role || '',
+                                 session_token: ls.token(), dev_key: ls.key() }, extra || {});
+    const res = await fetch(API_URL, { method:'POST', headers:{ 'Content-Type':'text/plain' }, body: JSON.stringify(body) });
+    return res.json();
+  }
+
+  function renderAccess() {
+    const loggedIn = !!(ls.token() && ls.user().username);
+    setPill($('pill-login'), loggedIn ? 'test' : 'bad', loggedIn ? ('Login: ' + ls.user().username) : 'Belum login');
+    setPill($('pill-key'),   ls.key() ? 'test' : 'bad', ls.key() ? 'Aktif di tab ini' : 'Belum diisi');
+    $('login-note').style.display = loggedIn ? 'none' : 'block';
+    $('key-form').style.display   = ls.key() ? 'none' : 'flex';
+    $('key-msg').textContent      = ls.key() ? '' : 'Kode divalidasi ke server. Hanya berlaku di tab ini dan hilang saat tab ditutup.';
+    $('open-site').style.display  = (ls.key() && loggedIn) ? 'block' : 'none';
+  }
+
+  function renderButtons() {
+    const ready = !!(ls.token() && ls.key()) && state.loaded && !busy;
+    $('btn-maint-on').disabled   = !(ready && !state.maintenance);
+    $('btn-test-start').disabled = !(ready && state.maintenance && !state.testMode);
+    $('btn-test-end').disabled   = !(ready && state.testMode);
+    $('btn-maint-off').disabled  = !(ready && state.maintenance && !state.testMode);
+    $('btn-open-site').disabled  = !(ready && state.testMode);
+  }
+
+  function renderStatus(d) {
+    state.maintenance = d.maintenance === true;
+    state.testMode    = d.test_mode === true;
+    state.loaded      = true;
+
+    setPill($('pill-maint'), state.maintenance ? 'on' : 'off', state.maintenance ? 'Aktif' : 'Nonaktif');
+    setPill($('pill-test'),  state.testMode ? 'test' : 'off',  state.testMode ? 'Aktif' : 'Nonaktif');
+
+    const s = d.test_session, meta = $('session-meta'), errBox = $('session-error');
+    if (s) {
+      const when = s.started_at ? new Date(s.started_at).toLocaleString('id-ID') : '-';
+      meta.style.display = 'block';
+      meta.textContent = '';
+      const parts = [['Sesi', s.id], ['Mulai', when], ['Oleh', s.started_by || '-'], ['Sheet di-snapshot', String(s.sheets)]];
+      parts.forEach(([k, v], i) => {
+        const b = document.createElement('b'); b.textContent = v;
+        meta.append(document.createTextNode((i ? '  ·  ' : '') + k + ': '), b);
+      });
+    } else { meta.style.display = 'none'; }
+
+    if (s && s.last_error) {
+      errBox.style.display = 'block';
+      errBox.textContent = 'Restore terakhir gagal. Snapshot masih utuh, jalankan "Selesai testing & restore" lagi. Detail: ' + s.last_error;
+    } else { errBox.style.display = 'none'; }
+  }
+
+  async function refreshStatus() {
+    renderAccess();
+    try {
+      const r = await apiGet('getMaintenanceStatus');
+      if (r && r.data) {
+        if (!ls.key()) { r.data.test_mode = false; r.data.test_session = null; }
+        renderStatus(r.data);
+      } else {
+        setPill($('pill-maint'), 'bad', 'Gagal memuat');
+        logLine('Status tidak terbaca: ' + ((r && r.message) || 'respons kosong'), 'e');
+      }
+    } catch(e) {
+      setPill($('pill-maint'), 'bad', 'Gagal memuat');
+      logLine('Tidak bisa menghubungi server.', 'e');
+    }
+    renderButtons();
+  }
+
+  function confirmDialog(cfg) {
+    return new Promise(resolve => {
+      const dlg = $('dlg'), ok = $('dlg-ok'), cancel = $('dlg-cancel'), ul = $('dlg-list');
+      $('dlg-title').textContent = cfg.title;
+      $('dlg-body').textContent  = cfg.body || '';
+      ul.textContent = '';
+      (cfg.items || []).forEach(t => { const li = document.createElement('li'); li.textContent = t; ul.appendChild(li); });
+      ul.style.display = (cfg.items && cfg.items.length) ? 'block' : 'none';
+      ok.textContent = cfg.okText || 'Lanjutkan';
+      ok.className = cfg.danger ? 'confirm-danger' : 'primary';
+
+      let result = false;
+      const onOk = () => { result = true; dlg.close(); };
+      const onCancel = () => { dlg.close(); };
+      ok.addEventListener('click', onOk);
+      cancel.addEventListener('click', onCancel);
+      dlg.addEventListener('close', () => {
+        ok.removeEventListener('click', onOk);
+        cancel.removeEventListener('click', onCancel);
+        resolve(result);
+      }, { once: true });
+
+      dlg.showModal();
+      (cfg.danger ? cancel : ok).focus(); // aksi merusak: fokus awal di Batal
+    });
+  }
+
+  async function run(label, action, extra, confirmCfg) {
+    if (busy) return;
+    if (confirmCfg && !(await confirmDialog(confirmCfg))) return;
+    busy = true; renderButtons();
+    $('busy-title').textContent = label + '…';
+    $('busy').classList.add('show');
+    try {
+      const r = await apiPost(action, extra);
+      if (r.status === 'OK') {
+        logLine(label + ': ' + ((r.data && r.data.message) || 'berhasil'), 's');
+      } else if (r.status === 'UNAUTHORIZED') {
+        logLine('Sesi login habis. Login ulang lewat index.html?bypass=1, lalu kembali ke panel ini.', 'e');
+      } else {
+        logLine(label + ' gagal: ' + (r.message || 'tidak diketahui'), 'e');
+      }
+    } catch(e) {
+      logLine(label + ': koneksi terputus. Cek status di bawah sebelum mengulang, proses di server mungkin tetap berjalan.', 'e');
+    } finally {
+      busy = false;
+      $('busy').classList.remove('show');
+      await refreshStatus();
+    }
+  }
+
+  $('btn-open-site').addEventListener('click', () => { window.location.href = 'index.html'; });
+  $('btn-maint-on').addEventListener('click', () =>
+    run('Mulai maintenance', 'devMaintenanceOn', { message: $('msg-input').value.trim(), estimasi: $('est-input').value.trim() },
+        { title: 'Mulai maintenance?', body: 'Website ditutup untuk semua pengguna.',
+          items: ['Admin, Mentor, dan Owner tidak bisa mengakses data', 'Hanya pemegang kode developer yang tetap bisa masuk'],
+          okText: 'Mulai maintenance' }));
+  $('btn-test-start').addEventListener('click', () =>
+    run('Mulai testing', 'devTestStart', null,
+        { title: 'Mulai sesi testing?', body: 'Sistem membuat snapshot semua sheet sebelum kamu mulai menguji.',
+          items: ['Proses bisa memakan waktu beberapa puluh detik', 'Perubahan data selama testing bersifat sementara'],
+          okText: 'Buat snapshot & mulai' }));
+  $('btn-test-end').addEventListener('click', () =>
+    run('Selesai testing & restore', 'devTestEnd', null,
+        { title: 'Selesai testing dan kembalikan data?', body: 'Semua perubahan data sejak testing dimulai akan dibatalkan.',
+          items: ['Data dikembalikan dari snapshot, lalu diverifikasi', 'Maintenance tetap aktif setelah restore'],
+          okText: 'Restore data', danger: true }));
+  $('btn-maint-off').addEventListener('click', () =>
+    run('Matikan maintenance', 'devMaintenanceOff', null,
+        { title: 'Matikan maintenance?', body: 'Website langsung terbuka kembali untuk semua pengguna.',
+          items: ['Pastikan semua pengujian sudah selesai'],
+          okText: 'Matikan maintenance' }));
+
+  async function saveKey() {
+    const key = $('key-input').value.trim();
+    if (!key) { $('key-msg').textContent = 'Kode tidak boleh kosong.'; return; }
+    $('key-save').disabled = true; $('key-msg').textContent = 'Memeriksa…';
+    try {
+      const u = new URL(API_URL);
+      u.searchParams.set('action', 'validateDevKey');
+      u.searchParams.set('dev_key', key);
+      const r = await (await fetch(u.toString())).json();
+      if (r.status === 'OK' && r.data && r.data.valid) {
+        ls.setKey(key);
+        $('key-input').value = '';
+        if (!ls.key()) {
+          $('key-msg').textContent = 'Browser memblokir penyimpanan sesi. Nonaktifkan mode privat/blokir storage lalu coba lagi.';
+        } else {
+          await refreshStatus();
+        }
+      } else {
+        $('key-msg').textContent = 'Kode developer salah.';
+      }
+    } catch(e) { $('key-msg').textContent = 'Gagal menghubungi server, coba lagi.'; }
+    finally { $('key-save').disabled = false; }
+  }
+  $('key-save').addEventListener('click', saveKey);
+  $('key-input').addEventListener('keydown', (e) => { if (e.key === 'Enter') saveKey(); });
+
+  // Kode tersimpan bisa sudah tidak valid (mis. diganti di server). Cek sekali saat dibuka,
+  // kalau salah hapus supaya form input muncul lagi dan tidak "nyangkut".
+  async function checkStoredKey() {
+    if (!ls.key()) return;
+    try {
+      const u = new URL(API_URL);
+      u.searchParams.set('action', 'validateDevKey');
+      u.searchParams.set('dev_key', ls.key());
+      const r = await (await fetch(u.toString())).json();
+      if (!(r.status === 'OK' && r.data && r.data.valid)) {
+         ls.clearKey();
+        logLine('Kode developer di sesi ini sudah tidak valid dan dihapus. Masukkan kode yang baru.', 'e');
+      }
+    } catch(e) { /* gangguan jaringan: biarkan apa adanya */ }
+  }
+
+  checkStoredKey().then(refreshStatus);
+</script>
+</body>
+</html>
